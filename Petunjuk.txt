@@ -1,0 +1,14 @@
+Petunjuk
+----------------------------------------------------------------------------
+
+1. import database yang ada pada folder /db/dev_company.sql
+   charset : utf8, collation : utf8_general_ci
+2. pastikan config database sudah benar
+3. jalankan localhost/company
+
+----------------------------------------------------------------------------
+akun login
+user : heru
+pass : sukses
+
+

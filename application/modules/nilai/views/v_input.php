@@ -106,15 +106,9 @@
     <?php if ($this->session->flashdata('data') != '') { ?>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('input[name="username"]').val('<?=$this->session->flashdata('data')["username"];?>');
-            $('input[name="password"]').val('<?=$this->session->flashdata('data')["password"];?>');
-            $('select[name="group"]').val('<?=$this->session->flashdata('data')["group"];?>');
-            $('input[name="nik"]').val('<?=$this->session->flashdata('data')["nik"];?>');
-            $('input[name="fullname"]').val('<?=$this->session->flashdata('data')["fullname"];?>');
-            $('select[name="gender"]').val('<?=$this->session->flashdata('data')["gender"];?>');
-            $('input[name="phone"]').val('<?=$this->session->flashdata('data')["phone"];?>');
-            $('input[name="email"]').val('<?=$this->session->flashdata('data')["email"];?>');
-            $('textarea[name="address"]').val('<?=$this->session->flashdata('data')["address"];?>');
+            $('select[name="nim"]').val('<?=$this->session->flashdata('data')["mahasiswa_id"];?>');
+            $('input[name="nilai_ujian_a"]').val('<?=$this->session->flashdata('data')["nilai_ujian_a"];?>');
+            $('input[name="nilai_ujian_b"]').val('<?=$this->session->flashdata('data')["nilai_ujian_b"];?>');
         });
     </script>
     <?php } ?>

@@ -45,42 +45,35 @@ class Nilai extends MX_Controller {
 
 	public function do_add()
 	{
-		$this->form_validation->set_rules('username', 'Username', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
-		$this->form_validation->set_rules('password', 'Password', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
-		$this->form_validation->set_rules('group', 'Group', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
-		$this->form_validation->set_rules('fullname', 'Nama Lengkap', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
-		$this->form_validation->set_rules('status', 'Status', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
-
+		$this->form_validation->set_rules('nim', 'Nomor Induk Mahasiswa', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
+		$this->form_validation->set_rules('nilai_ujian_a', 'Nilai Ujian A', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
+		$this->form_validation->set_rules('nilai_ujian_b', 'Nilai Ujian B', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
+		
 		if ($this->form_validation->run() == TRUE) {
 
             $this->db->trans_begin();
 
             $params = array(
-                'user_username'   	=> $this->input->post('username'),
-                'user_group_id'   	=> $this->input->post('group'),
-                'user_nik'   		=> $this->input->post('nik'),
-                'user_fullname'   	=> $this->input->post('fullname'),
-                'user_password'   	=> md5($this->input->post('password').'P@ijo444'),
-                'user_token'   		=> bin2hex(openssl_random_pseudo_bytes(30)),
-                'user_keys'   		=> 'K3Y$-'.bin2hex(openssl_random_pseudo_bytes(3)),
-                'user_email'   		=> $this->input->post('email'),
-                'user_phone'   		=> $this->input->post('phone'),
-                'user_address'   	=> $this->input->post('address'),
-                'user_gender'   	=> $this->input->post('gender'),
-                'user_status'   	=> $this->input->post('status'),
-                'created_user_id'   => $this->session->userdata('user_id'),
-                'created_date'      => date('Y-m-d H:i:s')
+                'nilai_mahasiswa_id'   	=> $this->input->post('nim'),
+				'nilai_ujian_a'   		=> $this->input->post('nilai_ujian_a'),
+				'nilai_ujian_b'   		=> $this->input->post('nilai_ujian_b'),
+				'nilai_total'   		=> $this->input->post('nilai_total'),
+				'nilai_rata_rata'   	=> $this->input->post('nilai_rata_rata'),
+				'nilai_grade'   		=> $this->input->post('nilai_grade'),
+                'created_user_id'   	=> $this->session->userdata('user_id'),
+                'created_date'      	=> date('Y-m-d H:i:s')
             );
-            $result = $this->m_ref->insert('mst_user', $params);
+			
+            $result = $this->m_ref->insert('trx_nilai', $params);
 
             if ($this->db->trans_status()) {
                 $this->db->trans_commit();
                 $this->session->set_flashdata('message', array('alert' => 'alert-success', 'pesan' => 'Data berhasil disimpan!', 'icon' => 'fa fa-check-circle'));
-                redirect('mst_user');
+                redirect('nilai');
             } else {
                 $this->db->trans_rollback();
                 $this->session->set_flashdata('message', array('alert' => 'alert-danger', 'pesan' => 'Data gagal disimpan!', 'icon' => 'fa fa-times-circle'));
-                redirect('mst_user/add');
+                redirect('nilai/add');
             }
 
         } else {
@@ -89,18 +82,14 @@ class Nilai extends MX_Controller {
            	$this->session->set_flashdata('message', array('alert' => 'alert-warning', 'pesan' => $error, 'icon' => 'fa fa-exclamation-triangle'));
            	
            	$this->session->set_flashdata('data', array(
-       			'username' 	=> $this->input->post('username'),
-       			'password' 	=> $this->input->post('password'),
-       			'group' 	=> $this->input->post('group'),
-       			'nik' 		=> $this->input->post('nik'),
-       			'fullname' 	=> $this->input->post('fullname'),
-       			'gender' 	=> $this->input->post('gender'),
-       			'phone' 	=> $this->input->post('phone'),
-       			'email' 	=> $this->input->post('email'),
-       			'status' 	=> $this->input->post('status'),
-       			'address' 	=> $this->input->post('address'),
+				'nilai_mahasiswa_id'   	=> $this->input->post('mahasiswa_id'),
+				'nilai_ujain_a'   		=> $this->input->post('nilai_ujian_a'),
+				'nilai_ujain_b'   		=> $this->input->post('nilai_ujian_b'),
+				'nilai_total'   		=> $this->input->post('nilai_total'),
+				'nilai_rata_rata'   	=> $this->input->post('nilai_rata_rata'),
+				'nilai_grade'   		=> $this->input->post('nilai_grade'),
            	));
-           	redirect('mst_user/add');
+           	redirect('nilai/add');
         }
 
 	}
@@ -108,16 +97,15 @@ class Nilai extends MX_Controller {
 	public function edit()
 	{
 		$id 	= $this->uri->segment(3);
-		$header = array('company' => 'Company', 'title' => 'Edit Pengguna');
+		$header = array('company' => 'Company', 'title' => 'Edit Penilaian');
 		$data 	= array(
 			'title_breadcrumb' 	=> 'Edit',
-			'title_header' 		=> 'Edit Pengguna',
-			'url_refresh'		=> base_url('mst_user/edit/').$id,
-			'url_action'		=> base_url('mst_user/do_edit'),
-			'url_back'			=> base_url('mst_user'),
-			'group'				=> $this->m_mst_user->get_list_group(),
-			'gender'			=> $this->m_mst_user->get_list_gender(),
-			'detail'			=> $this->m_mst_user->get_detail_data($id)
+			'title_header' 		=> 'Edit Penilaian',
+			'url_refresh'		=> base_url('nilai/edit/').$id,
+			'url_action'		=> base_url('nilai/do_edit'),
+			'url_back'			=> base_url('nilai'),
+			'detail'			=> $this->m_nilai->get_detail_data($id),
+			'mahasiswa'			=> $this->m_nilai->get_list_mst_mahasiswa()
 		);
 
 		$this->layout->header($header);
@@ -129,37 +117,34 @@ class Nilai extends MX_Controller {
 	public function do_edit()
 	{
 		$this->form_validation->set_rules('id', '', 'required', array('required' => 'Form Isian Wajib Diisi!'));
-		$this->form_validation->set_rules('group', 'Group', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
-		$this->form_validation->set_rules('fullname', 'Nama Lengkap', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
-		$this->form_validation->set_rules('status', 'Status', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
-
+		$this->form_validation->set_rules('nilai_ujian_a', 'Nilai Ujian A', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
+		$this->form_validation->set_rules('nilai_ujian_b', 'Nilai Ujian B', 'required', array('required' => 'Form Isian %s Wajib Diisi!'));
+		
 		if ($this->form_validation->run() == TRUE) {
 
 			$this->db->trans_begin();
 
 			$params = array(
-                'user_group_id'   	=> $this->input->post('group'),
-                'user_nik'   		=> $this->input->post('nik'),
-                'user_fullname'   	=> $this->input->post('fullname'),
-                'user_email'   		=> $this->input->post('email'),
-                'user_phone'   		=> $this->input->post('phone'),
-                'user_address'   	=> $this->input->post('address'),
-                'user_gender'   	=> $this->input->post('gender'),
-                'user_status'   	=> $this->input->post('status'),
+                'nilai_mahasiswa_id'   	=> $this->input->post('nim'),
+				'nilai_ujian_a'   		=> $this->input->post('nilai_ujian_a'),
+				'nilai_ujian_b'   		=> $this->input->post('nilai_ujian_b'),
+				'nilai_total'   		=> $this->input->post('nilai_total'),
+				'nilai_rata_rata'   	=> $this->input->post('nilai_rata_rata'),
+				'nilai_grade'   		=> $this->input->post('nilai_grade'),
                 'modified_user_id'  => $this->session->userdata('user_id'),
                 'modified_date'     => date('Y-m-d H:i:s')
             );
-            $where 	= array('user_id' => $this->input->post('id'));
-            $result = $this->m_ref->update($where, 'mst_user', $params);
+            $where 	= array('nilai_id' => $this->input->post('id'));
+            $result = $this->m_ref->update($where, 'trx_nilai', $params);
 
 			if ($this->db->trans_status()) {
                 $this->db->trans_commit();
                 $this->session->set_flashdata('message', array('alert' => 'alert-success', 'pesan' => 'Data berhasil disimpan!', 'icon' => 'fa fa-check-circle'));
-                redirect('mst_user');
+                redirect('nilai');
             } else {
                 $this->db->trans_rollback();
                 $this->session->set_flashdata('message', array('alert' => 'alert-danger', 'pesan' => 'Data gagal disimpan!', 'icon' => 'fa fa-times-circle'));
-                redirect('mst_user/edit/'.$this->input->post('id'));
+                redirect('nilai/edit/'.$this->input->post('id'));
             }
 
 		} else {
@@ -168,37 +153,28 @@ class Nilai extends MX_Controller {
            	$this->session->set_flashdata('message', array('alert' => 'alert-warning', 'pesan' => $error, 'icon' => 'fa fa-exclamation-triangle'));
            	
            	$this->session->set_flashdata('data', array(
-       			'username' 	=> $this->input->post('username'),
-       			'group' 	=> $this->input->post('group'),
-       			'nik' 		=> $this->input->post('nik'),
-       			'fullname' 	=> $this->input->post('fullname'),
-       			'gender' 	=> $this->input->post('gender'),
-       			'phone' 	=> $this->input->post('phone'),
-       			'email' 	=> $this->input->post('email'),
-       			'status' 	=> $this->input->post('status'),
-       			'address' 	=> $this->input->post('address'),
+				'nilai_mahasiswa_id'   	=> $this->input->post('nim'),
+				'nilai_ujian_a'   		=> $this->input->post('nilai_ujian_a'),
+				'nilai_ujian_b'   		=> $this->input->post('nilai_ujian_b'),
+				'nilai_total'   		=> $this->input->post('nilai_total'),
+				'nilai_rata_rata'   	=> $this->input->post('nilai_rata_rata'),
+				'nilai_grade'   		=> $this->input->post('nilai_grade'),
            	));
-           	redirect('mst_user/edit/'.$this->input->post('id'));
+           	redirect('nilai/edit/'.$this->input->post('id'));
 		}
 	}
 
 	public function detail()
 	{
 		$id 	= $this->uri->segment(3);
-		$header = array('company' => 'Company', 'title' => 'Detail Pengguna');
+		$header = array('company' => 'Company', 'title' => 'Detail Penilaian');
 		$data 	= array(
 			'title_breadcrumb' 	=> 'Detail',
-			'title_header' 		=> 'Detail Pengguna',
-			'url_refresh'		=> base_url('mst_user/detail/').$id,
-			'url_back'			=> base_url('mst_user'),
-			'detail'			=> $this->m_mst_user->get_detail_data($id)
+			'title_header' 		=> 'Detail Penilaian',
+			'url_refresh'		=> base_url('nilai/detail/').$id,
+			'url_back'			=> base_url('nilai'),
+			'detail'			=> $this->m_nilai->get_detail_data_view($id)
 		);
-
-		if ($data['detail']['status'] == 'Y') {
-			$data['detail']['status'] = 'Aktif';
-		} else {
-			$data['detail']['status'] = 'Tidak Aktif';
-		}
 
 		$this->layout->header($header);
 		$this->layout->menu_login();
@@ -214,8 +190,8 @@ class Nilai extends MX_Controller {
 
 			$this->db->trans_begin();
 
-			$where  = array('user_id' => $id);
-			$result = $this->m_ref->delete($where, 'mst_user');
+			$where  = array('nilai_id' => $id);
+			$result = $this->m_ref->delete($where, 'trx_nilai');
 
 			if (!$this->db->error()['code']) {
 	            $this->db->trans_commit();
@@ -225,12 +201,29 @@ class Nilai extends MX_Controller {
 	            $this->session->set_flashdata('message', array('alert' => 'alert-danger', 'pesan' => 'Data gagal dihapus!', 'icon' => 'fa fa-times-circle'));
 	        }
 
-	        redirect('mst_user');
+	        redirect('nilai');
 
 		} else {
 			$this->session->set_flashdata('message', array('alert' => 'alert-danger', 'pesan' => 'Data gagal dihapus!', 'icon' => 'fa fa-times-circle'));
-			redirect('mst_user');
+			redirect('nilai');
 		}
 	}
+
+	public function json_mahasiswa($id) {
+        $nim = $this->m_nilai->get_json_mahasiswa($id);
+        if (!$nim) {
+            // Return a JSON response with a 404 status code if the user is not found
+            return $this->output
+                ->set_status_header(404)
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'error' => 'Mahasiswa not found'
+                ]));
+        }
+        // Return a JSON response with the user data
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($nim));
+    }
 
 }

@@ -45,6 +45,7 @@ class M_nilai extends CI_Model {
     {
         $this->db->select('
                             nilai_id as id,
+                            nilai_mahasiswa_id,
                             nilai_ujian_a,
                             nilai_ujian_b,
                             nilai_grade,
@@ -54,7 +55,41 @@ class M_nilai extends CI_Model {
         $this->db->from('trx_nilai');
         $this->db->where('nilai_id', $id);
 
-        return $this->db->get()->result_array();
+        return $this->db->get()->row_array();
+    }
+    public function get_detail_data_view($id)
+    {
+        $this->db->select('
+                            nilai_id as id,
+                            nilai_mahasiswa_id,
+                            nilai_ujian_a,
+                            nilai_ujian_b,
+                            nilai_grade,
+                            nilai_rata_rata,
+                            nilai_total,
+                            mst_mahasiswa.mahasiswa_nim,
+                            mst_mahasiswa.mahasiswa_nama
+                        ');
+        $this->db->from('trx_nilai');
+        $this->db->join('mst_mahasiswa','mst_mahasiswa.mahasiswa_id=trx_nilai.nilai_mahasiswa_id','left');
+
+        $this->db->where('nilai_id', $id);
+
+        return $this->db->get()->row_array();
+    }
+
+    public function get_json_mahasiswa($id)
+    {
+        $this->db->select('
+                            mahasiswa_id,
+                            mahasiswa_nim,
+                            mahasiswa_nama
+                   ');
+        $this->db->from('mst_mahasiswa');
+        $this->db->where('mahasiswa_id', $id);
+        $query = $this->db->get();
+
+        return $query->result();
     }
 
     
